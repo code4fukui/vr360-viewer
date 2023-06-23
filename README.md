@@ -1,7 +1,13 @@
 # vr360-viewer
 
+link
 ```
 https://code4fukui.github.io/vr360-viewer/?url=[vr360 photo url]
+```
+
+embedded in HTML
+```html
+<iframe src="https://code4fukui.github.io/vr360-viewer/" style="width:100%;aspect-ratio:2/1;"></iframe>
 ```
 
 ## content
