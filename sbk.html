@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>jig.jp 2023</title>
+<script src="https://code4fukui.github.io/aframe/dist/aframe-master.min.js"></script>
+</head>
+<body>
+<a-scene antialias="true">
+  <a-entity camera look-controls position="0 0 0"></a-entity>
+  <a-sky id=sky></a-sky>
+</a-scene>
+</body>
+<script type="module">
+const urls = [
+  "./img/jigjp-sabako-20230706.jpg",
+  "./img/jigjp20230706.jpg",
+  "https://code4fukui.github.io/vr-fukui/img/vr-sundome.jpg",
+  "https://code4fukui.github.io/vr-fukui/img/vr-nishiyama1.jpg",
+];
+let n = 0;
+const delaysec = 5;
+const show = () => {
+  sky.setAttribute("src", urls[n]);
+  if (n == urls.length - 1) {
+    n = 0;
+  } else {
+    n++;
+  }
+};
+setInterval(show, delaysec * 1000);
+show();
+
+</script>
+
+</html>
