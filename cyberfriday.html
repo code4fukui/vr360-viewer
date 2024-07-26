@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<script type="module">
+import { THREE, scene, camera, renderer } from "https://code4fukui.github.io/egxr.js/egxr.js";
+
+export const createSphere = (imgurl, r = 1.0) => {
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load(imgurl, () => {
+    texture.wrapS = THREE.MirroredRepeatWrapping;
+    //texture.wrapT = THREE.MirroredRepeatWrapping;
+    texture.repeat.x = -1;
+    console.log(texture);
+  });
+
+  const geometry = new THREE.SphereGeometry(r, 32, 32); 
+  const material = new THREE.MeshBasicMaterial({
+    side: THREE.DoubleSide,
+    map: texture,
+    //color: 0xff0000,
+    //wireframe: true,
+  });
+  const sphere = new THREE.Mesh(geometry, material);
+
+  return sphere;
+};
+
+const imgs = [
+  "img/20240726-cyberfriday.jpg",
+  "img/cyberfriday20230623-fut.jpg",
+  "img/jigjp20230706.jpg",
+];
+
+const objs = [];
+
+const r = 1.5;
+for (let i = 0; i < imgs.length; i++) {
+  const sphere = createSphere(imgs[i]);
+  scene.add(sphere);
+  sphere.idx = i;
+
+  sphere.tick = (t) => {
+    const th = Math.PI * 2 / imgs.length * sphere.idx + t / 20;
+    const x = Math.cos(th) * r;
+    const z = Math.sin(th) * r;
+
+    sphere.position.x = x;
+    sphere.position.z = z - 1;
+    //sphere.position.y = 1.2;
+  };
+  objs.push(sphere);
+}
+
+renderer.setAnimationLoop(() => {
+  const t = performance.now() / 1000;
+  objs.forEach(o => o.tick(t));
+	renderer.render(scene, camera);
+});
+
+document.body.onkeydown = (e) => {
+  const d = .1;
+  if (e.key == "ArrowRight") {
+    camera.position.x += d;
+  } else if (e.key == "ArrowLeft") {
+    camera.position.x -= d;
+  } else if (e.key == "ArrowUp") {
+    camera.position.z -= d;
+  } else if (e.key == "ArrowDown") {
+    camera.position.z += d;
+  }
+};
+document.body.onmousewheel = (e) => {
+  console.log(e);
+  camera.position.z += e.deltaY / 30;
+};
+
+</script>
