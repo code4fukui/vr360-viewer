@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<script type="module">
+import { THREE, scene, camera, renderer } from "https://code4fukui.github.io/egxr.js/egxr.js";
+
+const loadTextureAsync = async (imgurl) => {
+  return new Promise(resolve => {
+    const loader = new THREE.TextureLoader();
+    loader.load(imgurl, resolve);
+  });
+};
+
+export const createSphere = async (imgurl, r = 1.0) => {
+  /*
+  const loader = new THREE.TextureLoader();
+  const texture = loader.load(imgurl, (texture) => {
+    texture.wrapS = THREE.MirroredRepeatWrapping;
+    //texture.wrapT = THREE.MirroredRepeatWrapping; // NG
+    texture.repeat.x = 1;
+    console.log(texture);
+  });
+  */
+  const texture = await loadTextureAsync(imgurl);
+  texture.wrapS = THREE.MirroredRepeatWrapping;
+  texture.repeat.x = -1;
+  texture.offset.x = 1;
+
+  const geometry = new THREE.SphereGeometry(r, 32, 32); 
+  const material = new THREE.MeshBasicMaterial({
+    //side: THREE.DoubleSide,
+    side: THREE.BackSide,
+    map: texture,
+    //color: 0xff0000,
+    //wireframe: true,
+  });
+  const sphere = new THREE.Mesh(geometry, material);
+
+  return sphere;
+};
+
+const img = "img/20240726-cyberfriday.jpg";
+
+const sphere = await createSphere(img, 5);
+scene.add(sphere);
+
+/*
+    sphere.position.x = x;
+    sphere.position.z = z - 1;
+    //sphere.position.y = 1.2;
+  };
+  objs.push(sphere);
+}
+*/
+
+const pitchQuaternion = new THREE.Quaternion();
+const yawQuaternion = new THREE.Quaternion();
+const rollQuaternion = new THREE.Quaternion();
+const finalQuaternion = new THREE.Quaternion();
+let pitch = 0;
+let yaw = 0;
+let roll = 0;
+
+renderer.setAnimationLoop(() => {
+  const t = performance.now() / 1000;
+  //objs.forEach(o => o.tick(t));
+	renderer.render(scene, camera);
+});
+
+const calcQuaternion = () => {
+  pitchQuaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), pitch);
+  yawQuaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
+  rollQuaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), roll);
+  console.log(pitch, yaw, roll);
+  //camera.quaternion.copy(yawQuaternion).multiply(pitchQuaternion).multiplay(rollQuaternion);
+  //sphere.quaternion.copy(yawQuaternion).multiply(pitchQuaternion).multiplay(rollQuaternion);
+  sphere.quaternion.copy(yawQuaternion).multiply(pitchQuaternion);
+
+  //finalQuaternion.multiply(pitchQuaternion).multiply(yawQuaternion);//.multiply(rollQuaternion);
+  //camera.quaternion.copy(finalQuaternion);
+};
+onmousemove = (event) => {
+  const halfWidth = window.innerWidth / 2;
+  const halfHeight = window.innerHeight / 2;
+  
+  yaw = (event.clientX - halfWidth) / halfWidth * Math.PI;
+  pitch = (event.clientY - halfHeight) / halfHeight * Math.PI / 2;
+  calcQuaternion();
+};
+onmousewheel = (e) => {
+  //roll = e.deltaY / 100;
+  //calcQuaternion();
+  camera.position.z += e.deltaY / 100;
+};
+
+/*
+document.body.onkeydown = (e) => {
+  const d = .1;
+  if (e.key == "ArrowRight") {
+    camera.position.x += d;
+  } else if (e.key == "ArrowLeft") {
+    camera.position.x -= d;
+  } else if (e.key == "ArrowUp") {
+    camera.position.z -= d;
+  } else if (e.key == "ArrowDown") {
+    camera.position.z += d;
+  }
+};
+*/
+/*
+document.body.onmousewheel = (e) => {
+  camera.position.z += e.deltaY / 30;
+};
+*/
+
+</script>
