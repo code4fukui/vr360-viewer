@@ -8,6 +8,7 @@ export const createSphere = (imgurl, r = 1.0) => {
     texture.wrapS = THREE.MirroredRepeatWrapping;
     //texture.wrapT = THREE.MirroredRepeatWrapping;
     texture.repeat.x = -1;
+    texture.offset.x = 1;
     console.log(texture);
   });
 
